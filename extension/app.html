@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>词间 · Word Memory</title><link rel="stylesheet" href="app.css"></head>
+<body>
+<div class="shell">
+  <header><a class="brand" href="app.html"><span class="brand-mark">词</span><span>词间<small>WORD MEMORY</small></span></a><button id="expand" class="quiet">展开窗口 ↗</button></header>
+  <section class="intro"><div><p class="eyebrow">READ. CONNECT. REMEMBER.</p><h1>让每个词，<em>留下来。</em></h1><p class="subtitle">从一句话开始，沿着词源，把新词变成熟悉的词。</p></div><div class="stats"><div><strong id="total">0</strong><span>已收藏</span></div><div><strong id="due">0</strong><span>待复习</span></div></div></section>
+  <nav aria-label="功能"><button data-tab="lookup" class="active">查一个词</button><button data-tab="library">我的生词本</button><button data-tab="review">今日复习 <span id="due-badge">0</span></button></nav>
+  <main>
+    <section id="lookup-panel" class="panel"><form id="lookup-form" class="search"><label class="sr-only" for="word-input">英文单词</label><input id="word-input" placeholder="输入英文单词，例如 remember" autocomplete="off" maxlength="80" autofocus><button class="primary" type="submit">查词 ↗</button></form><p class="hint">也可以在网页上选中单词，点击浮现的「查词」。</p><div id="lookup-card"></div><div id="welcome" class="welcome"><span class="leaf">a</span><h2>不只知道意思，也知道来处。</h2><p>查词 → 找到词源 → 留下原句 → 间隔复习</p><div class="note-box"><b>阅读中的词，更容易留下来。</b><p>收藏时保留当时的句子，再写下一点自己的联想。下次复习，先回忆，再揭晓。</p></div></div></section>
+    <section id="library-panel" class="panel" hidden><div class="toolbar"><label class="sr-only" for="filter">搜索生词本</label><input id="filter" placeholder="搜索单词、释义或笔记"><button id="export" class="quiet">导出备份</button><label class="import-label quiet">导入<input id="import" type="file" accept="application/json,.json" hidden></label></div><div id="library" class="library"></div><div id="detail"></div></section>
+    <section id="review-panel" class="panel" hidden><div id="review"></div></section>
+  </main>
+  <p id="status" role="status" class="status"></p>
+  <footer><span>生词与复习记录保存在这台电脑</span><span>查询使用公开词典 · <a href="https://en.wiktionary.org/" target="_blank" rel="noopener noreferrer">Wiktionary</a></span></footer>
+</div><script type="module" src="app.js"></script>
+</body></html>
