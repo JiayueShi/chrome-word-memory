@@ -17,3 +17,8 @@ test('etymology failure does not prevent successful dictionary result',async()=>
  assert.equal((await handle({type:'QUERY_DICTIONARY',word:'remember'})).word,'remember');
  await assert.rejects(()=>handle({type:'QUERY_ETYMOLOGY',word:'unknown'}));
 });
+test('pronunciation request works independently of dictionary lookup',async()=>{
+ const handle=createHandler(createStore(local()),{pronounce:async word=>({word,source:'system'})});
+ assert.deepEqual(await handle({type:'SPEAK',word:'Remember!'}),{word:'remember',source:'system'});
+ await assert.rejects(()=>handle({type:'SPEAK',word:'https://example.com'}));
+});

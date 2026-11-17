@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
   "name": "词间 · Word Memory",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "在阅读中查词，通过真实词源、原句和间隔复习记住单词。生词本保存在本机。",
-  "permissions": ["storage"],
+  "permissions": ["storage", "tts"],
   "host_permissions": ["https://api.dictionaryapi.dev/*", "https://en.wiktionary.org/*", "https://kaikki.org/*", "https://api.mymemory.translated.net/*"],
   "background": {"service_worker":"worker.js","type":"module"},
   "action": {"default_popup":"app.html","default_title":"词间：查词与复习"},

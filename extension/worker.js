@@ -1,9 +1,40 @@
 import {normalizeWord} from './core.js';
 import {createStore} from './store.js';
 import {lookupDictionary,lookupEtymology,translateText} from './dictionary.js';
+let speechGeneration=0;
+export async function speakWord(input,tts=globalThis.chrome?.tts,runtime=globalThis.chrome?.runtime) {
+  const word=normalizeWord(input);const generation=++speechGeneration;
+  if(!tts?.getVoices || !tts?.speak)throw new Error('请在 chrome://extensions 重新加载扩展，启用发音权限。');
+  return new Promise((resolve,reject)=>{
+    let settled=false;let timer;let retryTimer;let attempts=0;
+    const finish=(error,result)=>{if(settled)return;settled=true;clearTimeout(timer);clearTimeout(retryTimer);error ? reject(error) : resolve(result);};
+    timer=setTimeout(()=>finish(new Error('英语语音没有响应，请检查系统声音或重新打开 Chrome。')),8000);
+    const loadVoices=()=>{try {tts.getVoices(voices=>{
+      if(settled)return;
+      if(generation!==speechGeneration){finish(null,{source:'system',status:'interrupted'});return;}
+      const error=runtime?.lastError?.message;
+      if(error){finish(new Error('无法读取系统语音：'+error));return;}
+      // Chrome can return an empty list while its native engine starts.
+      if(!voices.length && attempts++<16){retryTimer=setTimeout(loadVoices,250);return;}
+      const english=voices.filter(v=>!v.remote && /^en[-_]/i.test(v.lang || ''));
+      const voice=english.find(v=>v.voiceName==='Samantha' && v.lang==='en-US') || english.find(v=>v.lang==='en-US') || english[0];
+      if(!voice){finish(new Error('未找到本机英语语音。请在 macOS 系统设置 → 辅助功能 → 朗读内容中添加英语声音，再重新打开 Chrome。'));return;}
+      const result={source:'system',voice:voice.voiceName,lang:voice.lang};
+      try {tts.speak(word,{voiceName:voice.voiceName,lang:voice.lang,rate:0.9,enqueue:false,onEvent:event=>{
+        if(settled)return;
+        if(event.type==='start'){clearTimeout(timer);timer=setTimeout(()=>finish(new Error('发音超时，请重试。')),20000);}
+        else if(event.type==='end')finish(null,{...result,status:'finished'});
+        else if(event.type==='interrupted' || event.type==='cancelled')finish(null,{...result,status:'interrupted'});
+        else if(event.type==='error')finish(new Error('无法播放英语发音：'+(event.errorMessage || '系统语音不可用。')));
+      }},()=>{const error=runtime?.lastError?.message;if(error)finish(new Error('无法播放英语发音：'+error));});}
+      catch(error){finish(error);}
+    });} catch(error){finish(error);}};loadVoices();
+  });
+}
 export function createHandler(store, providers = {}) {
   const dictionary=providers.dictionary || lookupDictionary;
   const etymology=providers.etymology || lookupEtymology;
+  const pronounce=providers.pronounce || speakWord;
   const inflight=new Map();
   async function query(word,kind,force) {
     const key=word+':'+kind;
@@ -29,6 +60,7 @@ export function createHandler(store, providers = {}) {
     switch(message.type) {
       case 'QUERY_DICTIONARY': return query(normalizeWord(message.word),'dictionary',message.force);
       case 'QUERY_ETYMOLOGY': return query(normalizeWord(message.word),'etymology',message.force);
+      case 'SPEAK': return pronounce(normalizeWord(message.word));
       case 'TRANSLATE': return translateText(message.text);
       case 'LIST': return store.list();
       case 'SAVE': return store.save(message.lookup,message.context,undefined,message.patch || {});

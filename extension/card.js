@@ -5,6 +5,17 @@ export function element(tag, text, className) {
 export function link(text,url) {
   const a=element('a',text);a.href=safeUrl(url);a.target='_blank';a.rel='noopener noreferrer';return a;
 }
+export function pronunciationButton(word,send,onStatus,cls='wm-audio') {
+  const b=element('button','▶ 发音',cls);b.type='button';b.title='使用本机英语语音发音';
+  b.addEventListener('click',async()=>{
+    if(b.disabled)return;b.disabled=true;b.textContent='发音中…';onStatus('正在发音…');
+    try {const result=await send({type:'SPEAK',word});
+      const accent=result.lang==='en-US' ? '美式' : result.lang==='en-GB' ? '英式' : '英语';
+      onStatus(result.status==='interrupted' ? '已停止发音。' : '播放完成 · 系统'+accent+'发音。');
+    }catch(error){onStatus(error.message || '发音失败，请重试。');}
+    finally{b.disabled=false;b.textContent='▶ 发音';}
+  });return b;
+}
 export function renderCard(container,input,context,send,options={}) {
   const word=normalizeWord(input);let closed=false;let saving=false;let saved=false;
   let dictionaryDone=!!options.initialLookup;let etymologyDone=!!options.initialLookup;
@@ -45,10 +56,8 @@ export function renderCard(container,input,context,send,options={}) {
     const top=element('div',undefined,'wm-top');top.append(element('span','词间 / WORD MEMORY','wm-brand'));
     if(options.onClose)top.append(button('×',close,'wm-close'));card.append(top);
     const heading=element('div',undefined,'wm-heading');heading.append(element('h2',word));
-    const audio=button('▶ 发音',async()=>{
-      try {if(lookup.audio) await new Audio(lookup.audio).play();else throw new Error('no audio');}
-      catch {if('speechSynthesis' in window){const utterance=new SpeechSynthesisUtterance(word);utterance.lang='en-US';speechSynthesis.cancel();speechSynthesis.speak(utterance);feedback='使用系统英语发音。';draw();}else{feedback='当前浏览器无法播放发音。';draw();}}
-    },'wm-audio');heading.append(audio);card.append(heading);
+    const audioStatus=element('p','','wm-muted');audioStatus.hidden=true;audioStatus.dataset.speechStatus='';audioStatus.setAttribute('role','status');
+    heading.append(pronunciationButton(word,send,text=>{if(closed)return;const status=root.querySelector('[data-speech-status]');if(status){status.hidden=false;status.textContent=text;}}));card.append(heading,audioStatus);
     if(lookup.phonetic)card.append(element('p',lookup.phonetic,'wm-phonetic'));
     const meaning=section('01 / 释义');
     if(translation) {meaning.append(element('p',translation,'wm-translation'));meaning.append(element('small',lookup.translationKind || '个人释义 / 可编辑'));}

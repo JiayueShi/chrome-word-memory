@@ -1,4 +1,4 @@
-import {renderCard,element,link} from './card.js';
+import {renderCard,element,link,pronunciationButton} from './card.js';
 import {normalizeWord} from './core.js';
 const $=id=>document.getElementById(id);
 let words=[],tab='lookup',lookupController,detailController,queue=[],reviewIndex=0,grading=false,reviewSession=0;
@@ -33,6 +33,7 @@ function renderReview(){
   const area=$('review');area.replaceChildren();const r=queue[reviewIndex];const session=reviewSession;
   if(!r){const empty=element('div',undefined,'empty');empty.append(element('h2',queue.length ? '这一轮，记住了。' : '今天暂时没有到期单词。'),element('p','下次阅读时继续积累。复习会在到期后出现在这里。'),button('去查一个词',()=>switchTab('lookup'),'primary'));area.append(empty);return;}
   const card=element('article',undefined,'review-card');card.append(element('p','ACTIVE RECALL · '+(reviewIndex+1)+' / '+queue.length,'review-label'),element('h2',r.word,'review-word'));
+  const audioStatus=element('p','','review-label');audioStatus.setAttribute('role','status');card.append(pronunciationButton(r.word,send,text=>{if(session===reviewSession && tab==='review')audioStatus.textContent=text;},'quiet'),audioStatus);
   if(r.context.sentence)card.append(element('blockquote',r.context.sentence,'review-context'));
   card.append(element('p','先想想它的意思，你能记起它的来处吗？','review-question'));
   const reveal=button('显示答案',()=>{
