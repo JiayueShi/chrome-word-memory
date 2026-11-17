@@ -19,7 +19,7 @@ try{
     c.beginPath();c.moveTo(x-38,y-68);c.lineTo(x+72,y);c.lineTo(x-38,y+68);c.closePath();c.fillStyle='#ffffff';c.fill();
     c.fillStyle='#203d30';c.beginPath();c.roundRect(x-360,y+196,720,180,36);c.fill();
     c.textAlign='center';c.textBaseline='middle';c.fillStyle='#ffffff';c.font='600 64px -apple-system, "PingFang SC", sans-serif';c.fillText('点击观看演示',x,y+255);
-    c.fillStyle='#c8d8bd';c.font='40px -apple-system, "PingFang SC", sans-serif';c.fillText('约 40 秒 · 支持全屏',x,y+326);
+    c.fillStyle='#c8d8bd';c.font='40px -apple-system, "PingFang SC", sans-serif';c.fillText('约 40 秒',x,y+326);
     return canvas.toDataURL('image/png').split(',')[1];
   },source);
   await fs.writeFile(path.join(root,'docs/word-memory-demo-cover.png'),Buffer.from(data,'base64'));
