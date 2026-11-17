@@ -15,9 +15,9 @@
 
 ## 看一遍就会用
 
-约 40 秒，带中文步骤字幕。点击封面播放，支持全屏观看。
+约 40 秒，带中文步骤字幕。点击下方封面的播放按钮观看，支持全屏。
 
-<a href="https://jiayueshi.github.io/chrome-word-memory/"><img src="https://raw.githubusercontent.com/JiayueShi/chrome-word-memory/main/docs/word-memory-demo-poster.png" width="600" alt="点击播放词间用法演示"></a>
+<a href="https://jiayueshi.github.io/chrome-word-memory/"><img src="https://raw.githubusercontent.com/JiayueShi/chrome-word-memory/main/docs/word-memory-demo-cover.png" width="600" alt="点击播放词间用法演示"></a>
 
 ## 安装
 
