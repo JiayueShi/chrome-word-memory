@@ -6,11 +6,11 @@
 
 ## 用法演示
 
-约 40 秒，从网页划词开始：查看释义与词源 → 写下自己的联想 → 收藏原句 → 先回忆，再显示答案和安排复习。
+约 40 秒，从网页划词开始：查看释义与词源 → 写下自己的联想 → 收藏原句 → 先回忆，再显示答案和安排复习。点击封面可在线播放并全屏观看。
 
-[![词间用法演示：网页划词、词源联想、收藏和复习](docs/word-memory-demo.gif)](https://github.com/JiayueShi/chrome-word-memory/raw/refs/heads/main/docs/word-memory-demo.mp4)
+[![点击播放高清用法演示：网页划词、词源联想、收藏和复习](docs/word-memory-demo-poster.png)](https://JiayueShi.github.io/chrome-word-memory/)
 
-[下载高清 MP4](https://github.com/JiayueShi/chrome-word-memory/raw/refs/heads/main/docs/word-memory-demo.mp4) · 无声演示，含中文步骤字幕。
+[▶ 在线播放 / 全屏观看](https://JiayueShi.github.io/chrome-word-memory/) · [下载高清 MP4](https://github.com/JiayueShi/chrome-word-memory/raw/refs/heads/main/docs/word-memory-demo.mp4) · 无声演示，含中文步骤字幕。
 
 演示中从网页切换到完整生词本：平时点击 Chrome 工具栏的扩展图标，再点击「展开窗口」。
 
@@ -69,4 +69,4 @@
 
 示例阅读页位于 demo/reading.html。若要验证网页划词，可在本项目目录运行 python3 -m http.server 8769 --bind 127.0.0.1，然后访问 http://127.0.0.1:8769/demo/reading.html。平时使用扩展无需此服务器。
 
-录制用法演示使用 scripts/record-demo.mjs（与浏览器测试相同的两个环境变量，另需 Playwright 的 FFmpeg）。脚本在独立临时 Chrome 配置里操作真实扩展，用捕获的词典响应避免网络等待；字幕和光标提示仅用于录制。可设置 WORD_MEMORY_RECORDING 指定原始 WebM 和检查截图的输出目录，不接触日常 Chrome 的生词记录。
+录制用法演示使用 scripts/record-demo.mjs（与浏览器测试相同的两个环境变量）。脚本在独立临时 Chrome 配置里操作真实扩展，用捕获的词典响应避免网络等待；字幕、光标提示和界面放大仅用于录制。可设置 WORD_MEMORY_RECORDING 指定 Retina PNG 帧、帧时间清单和检查截图的输出目录，不接触日常 Chrome 的生词记录。
