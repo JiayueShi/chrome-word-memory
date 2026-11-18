@@ -47,3 +47,5 @@
 录制用法演示使用 scripts/record-demo.mjs（与浏览器测试相同的两个环境变量）。脚本在独立临时 Chrome 配置里操作真实扩展，用捕获的词典响应避免网络等待；字幕、光标提示和界面放大仅用于录制。可设置 WORD_MEMORY_RECORDING 指定 Retina PNG 帧、帧时间清单和检查截图的输出目录，不接触日常 Chrome 的生词记录。
 
 本机语音回归验证（需已安装英语系统语音）：用相同的 PLAYWRIGHT_MODULE 和 WORD_MEMORY_BROWSER 运行 node scripts/browser-speech.mjs，覆盖网页禁止外部音频、断网、生词本、复习和缺少英语语音的提示，并检查真实语音引擎的 start/end 事件。
+
+音标回归：用相同的 PLAYWRIGHT_MODULE 和 WORD_MEMORY_BROWSER 运行 node scripts/browser-ipa.mjs，验证 general 的 IPA 字符、网页禁止字体加载和离线卡片。音标使用本地 Noto Sans 子集，以 FontFace 字节缓冲加载；运行时不请求远程字体。

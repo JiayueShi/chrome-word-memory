@@ -39,7 +39,8 @@ try{
   await page.getByText('已保存在本机，复习进度会保留。',{exact:true}).waitFor();
   const speak=async scope=>{
     await scope.getByRole('button',{name:'▶ 发音',exact:true}).click();
-    await scope.getByText(/播放完成 · 系统.*发音。/).waitFor({timeout:12000});
+    await scope.getByRole('button',{name:'▶ 发音',exact:true}).waitFor({timeout:12000});
+    assert.equal(await scope.getByText(/播放完成|正在发音|已停止发音/).count(),0,'Successful speech should leave no status text');
     const events=await worker.evaluate(()=>speechEvents.splice(0));
     assert.ok(events.some(e=>e.word==='remember' && e.type==='start'),'Native synthesis never started');
     assert.ok(events.some(e=>e.word==='remember' && e.type==='end'),'Native synthesis never completed');

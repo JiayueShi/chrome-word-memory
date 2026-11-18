@@ -1,4 +1,15 @@
 import {normalizeWord,cleanLookup,safeUrl} from './core.js';
+let ipaFontPromise;
+function loadIpaFont() {
+  if(!ipaFontPromise)ipaFontPromise=(async()=>{
+    const response=await fetch(new URL('./fonts/ipa.ttf',import.meta.url));
+    if(!response.ok)throw new Error('IPA font unavailable');
+    // Buffer loading avoids relying on the reading page's font-src policy.
+    const font=await new FontFace('WordMemoryIPA',await response.arrayBuffer()).load();
+    document.fonts.add(font);
+  })();
+  return ipaFontPromise;
+}
 export function element(tag, text, className) {
   const node=document.createElement(tag);if(text!==undefined) node.textContent=text;if(className) node.className=className;return node;
 }
@@ -8,15 +19,14 @@ export function link(text,url) {
 export function pronunciationButton(word,send,onStatus,cls='wm-audio') {
   const b=element('button','▶ 发音',cls);b.type='button';b.title='使用本机英语语音发音';
   b.addEventListener('click',async()=>{
-    if(b.disabled)return;b.disabled=true;b.textContent='发音中…';onStatus('正在发音…');
-    try {const result=await send({type:'SPEAK',word});
-      const accent=result.lang==='en-US' ? '美式' : result.lang==='en-GB' ? '英式' : '英语';
-      onStatus(result.status==='interrupted' ? '已停止发音。' : '播放完成 · 系统'+accent+'发音。');
+    if(b.disabled)return;b.disabled=true;b.textContent='发音中…';onStatus('');
+    try {await send({type:'SPEAK',word});onStatus('');
     }catch(error){onStatus(error.message || '发音失败，请重试。');}
     finally{b.disabled=false;b.textContent='▶ 发音';}
   });return b;
 }
 export function renderCard(container,input,context,send,options={}) {
+  loadIpaFont().catch(()=>{});
   const word=normalizeWord(input);let closed=false;let saving=false;let saved=false;
   let dictionaryDone=!!options.initialLookup;let etymologyDone=!!options.initialLookup;
   let lookup=cleanLookup(options.initialLookup || {word});
@@ -57,7 +67,7 @@ export function renderCard(container,input,context,send,options={}) {
     if(options.onClose)top.append(button('×',close,'wm-close'));card.append(top);
     const heading=element('div',undefined,'wm-heading');heading.append(element('h2',word));
     const audioStatus=element('p','','wm-muted');audioStatus.hidden=true;audioStatus.dataset.speechStatus='';audioStatus.setAttribute('role','status');
-    heading.append(pronunciationButton(word,send,text=>{if(closed)return;const status=root.querySelector('[data-speech-status]');if(status){status.hidden=false;status.textContent=text;}}));card.append(heading,audioStatus);
+    heading.append(pronunciationButton(word,send,text=>{if(closed)return;const status=root.querySelector('[data-speech-status]');if(status){status.hidden=!text;status.textContent=text;}}));card.append(heading,audioStatus);
     if(lookup.phonetic)card.append(element('p',lookup.phonetic,'wm-phonetic'));
     const meaning=section('01 / 释义');
     if(translation) {meaning.append(element('p',translation,'wm-translation'));meaning.append(element('small',lookup.translationKind || '个人释义 / 可编辑'));}
